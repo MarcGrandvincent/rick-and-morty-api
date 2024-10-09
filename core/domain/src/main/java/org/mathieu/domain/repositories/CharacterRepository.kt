@@ -32,5 +32,5 @@ interface CharacterRepository {
      * @param ids The unique identifier of the characters to be fetched.
      * @return a list of characters.
      */
-    suspend fun getCharacters(ids : List<Int>) : List<Character>
+    suspend fun getCharactersByIds(ids : List<Int>) : List<Character>
 }

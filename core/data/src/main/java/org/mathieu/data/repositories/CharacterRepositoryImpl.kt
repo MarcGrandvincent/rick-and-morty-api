@@ -39,7 +39,8 @@ internal class CharacterRepositoryImpl(
             .mapElement(transform = CharacterObject::toModel)
             .also { if (it.first().isEmpty()) fetchNext() }
 
-    override suspend fun getCharacters(ids: List<Int>): List<Character> {
+
+    override suspend fun getCharactersByIds(ids: List<Int>): List<Character> {
         return characterApi.getCharactersById(ids).map { c -> c.toModel() };
     }
 

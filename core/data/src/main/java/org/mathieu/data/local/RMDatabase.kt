@@ -14,7 +14,7 @@ internal class RMDatabase : RealmDatabase(
         CharacterObject::class,
         LocationObject::class
     ),
-    5
+    7
 )
 
 open class RealmDatabase(

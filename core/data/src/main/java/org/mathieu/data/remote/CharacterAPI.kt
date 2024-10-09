@@ -1,5 +1,6 @@
 package org.mathieu.data.remote
 
+import android.util.Log
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -48,7 +49,7 @@ internal class CharacterApi(private val client: HttpClient) {
 
         ids.forEach { id -> url += "$id," }
 
-        return client.get("url")
+        return client.get(url)
             .accept(HttpStatusCode.OK)
             .body()
     }
