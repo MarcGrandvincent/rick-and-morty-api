@@ -9,12 +9,15 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import org.mathieu.data.local.CharacterLocal
 import org.mathieu.data.local.objects.CharacterObject
+import org.mathieu.data.local.objects.LocationObject
 import org.mathieu.data.local.objects.toModel
 import org.mathieu.data.local.objects.toRealmObject
 import org.mathieu.data.remote.CharacterApi
 import org.mathieu.data.remote.responses.CharacterResponse
 import org.mathieu.domain.repositories.CharacterRepository
 import org.mathieu.domain.models.character.Character
+import org.mathieu.domain.models.location.LocationPreview
+import org.mathieu.domain.repositories.LocationRepository
 
 private const val CHARACTER_PREFS = "character_repository_preferences"
 private val nextPage = intPreferencesKey("next_characters_page_to_load")
@@ -26,7 +29,8 @@ private val Context.dataStore by preferencesDataStore(
 internal class CharacterRepositoryImpl(
     private val context: Context,
     private val characterApi: CharacterApi,
-    private val characterLocal: CharacterLocal
+    private val characterLocal: CharacterLocal,
+    private val locationRepository: LocationRepository
 ) : CharacterRepository {
 
     override suspend fun getCharacters(): Flow<List<Character>> =
@@ -34,6 +38,10 @@ internal class CharacterRepositoryImpl(
             .getCharacters()
             .mapElement(transform = CharacterObject::toModel)
             .also { if (it.first().isEmpty()) fetchNext() }
+
+    override suspend fun getCharacters(ids: List<Int>): List<Character> {
+        return characterApi.getCharactersById(ids).map { c -> c.toModel() };
+    }
 
 
     /**
@@ -53,10 +61,9 @@ internal class CharacterRepositoryImpl(
         val page = context.dataStore.data.map { prefs -> prefs[nextPage] }.first()
 
         if (page != -1) {
-
             val response = characterApi.getCharacters(page)
 
-            val nextPageToLoad = response.info.next?.split("?page=")?.last()?.toInt() ?: -1
+            val nextPageToLoad = response.info.next?.split("?page=")?.last()?.toIntOrNull() ?: -1
 
             context.dataStore.edit { prefs -> prefs[nextPage] = nextPageToLoad }
 
@@ -84,16 +91,54 @@ internal class CharacterRepositoryImpl(
      * @return The [Character] object representing the character details.
      * @throws Exception If the character cannot be found both locally and via the API.
      */
-    override suspend fun getCharacter(id: Int): Character =
-        characterLocal.getCharacter(id)?.toModel()
-            ?: characterApi.getCharacter(id = id)?.let { response ->
-                val obj = response.toRealmObject()
-                characterLocal.insert(obj)
-                obj.toModel()
+    override suspend fun getCharacter(id: Int): Character {
+        var result: Character? = null;
+
+        // Fetches the character from local storage
+        val localCharacter = characterLocal.getCharacter(id)
+
+        if (localCharacter == null) {
+            // Otherwise, fetches the character from the API
+            val apiResponse = characterApi.getCharacter(id)
+            apiResponse?.let { response ->
+                val realmObject = response.toRealmObject()
+
+                characterLocal.insert(realmObject)
+
+                result = realmObject.toModel()
             }
-            ?: throw Exception("Character not found.")
+        } else {
+            result = localCharacter.toModel();
+        }
 
+        if (result == null)
+            throw Exception("Character not found.")
 
+        // Fetches the corresponding location using the ID
+        val locationPreview = getLocationPreview(localCharacter?.locationId)
+
+        result!!.localisationPreview = locationPreview;
+
+        return result as Character;
+    }
+
+    /**
+     * Fetches location previews from the location ID.
+     *
+     * @param locationId The ID of the location.
+     * @return the locations preview.
+     */
+    private suspend fun getLocationPreview(locationId: Int?): LocationPreview {
+        return if (locationId != null && locationId != -1) {
+            val location = locationRepository.getLocation(locationId)
+            LocationPreview(
+                id = location.id,
+                name = location.name,
+                type = location.type,
+                dimension = location.dimension
+            )
+        } else throw Exception("Location not found")
+    }
 }
 
 

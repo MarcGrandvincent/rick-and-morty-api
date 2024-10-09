@@ -7,6 +7,7 @@ import io.ktor.client.request.parameter
 import io.ktor.http.HttpStatusCode
 import org.mathieu.data.remote.responses.CharacterResponse
 import org.mathieu.data.remote.responses.PaginatedResponse
+import org.mathieu.domain.models.character.Character
 
 internal class CharacterApi(private val client: HttpClient) {
 
@@ -41,4 +42,14 @@ internal class CharacterApi(private val client: HttpClient) {
         .accept(HttpStatusCode.OK)
         .body()
 
+
+    suspend fun getCharactersById(ids: List<Int>): List<CharacterResponse> {
+        var url = "character/"
+
+        ids.forEach { id -> url += "$id," }
+
+        return client.get("url")
+            .accept(HttpStatusCode.OK)
+            .body()
+    }
 }
