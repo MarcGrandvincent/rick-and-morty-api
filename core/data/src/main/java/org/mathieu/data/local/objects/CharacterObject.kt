@@ -5,6 +5,7 @@ import io.realm.kotlin.types.annotations.PrimaryKey
 import org.mathieu.data.remote.responses.CharacterResponse
 import org.mathieu.data.repositories.tryOrNull
 import org.mathieu.domain.models.character.*
+import org.mathieu.domain.models.location.LocationPreview
 
 /**
  * Represents a character entity stored in the SQLite database. This object provides fields
@@ -24,7 +25,7 @@ import org.mathieu.domain.models.character.*
  * @property image URL pointing to the character's avatar image.
  * @property created Timestamp indicating when the character entity was created in the database.
  */
-internal class CharacterObject: RealmObject {
+internal class CharacterObject : RealmObject {
     @PrimaryKey
     var id: Int = -1
     var name: String = ""
@@ -56,6 +57,19 @@ internal fun CharacterResponse.toRealmObject() = CharacterObject().also { obj ->
     obj.created = created
 }
 
+internal fun CharacterResponse.toModel() = Character(
+    id = id,
+    name = name,
+    status = tryOrNull { CharacterStatus.valueOf(status) } ?: CharacterStatus.Unknown,
+    species = species,
+    type = type,
+    gender = tryOrNull { CharacterGender.valueOf(gender) } ?: CharacterGender.Unknown,
+    origin = "" to 0,
+    location = "" to 0,
+    avatarUrl = image,
+    localisationPreview = LocationPreview(-1, "","","")
+)
+
 internal fun CharacterObject.toModel() = Character(
     id = id,
     name = name,
@@ -65,5 +79,6 @@ internal fun CharacterObject.toModel() = Character(
     gender = tryOrNull { CharacterGender.valueOf(gender) } ?: CharacterGender.Unknown,
     origin = originName to originId,
     location = locationName to locationId,
-    avatarUrl = image
+    avatarUrl = image,
+    localisationPreview = LocationPreview(-1, "","","")
 )
