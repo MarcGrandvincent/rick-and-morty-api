@@ -1,6 +1,5 @@
 package org.mathieu.characters.details
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -42,9 +41,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -55,7 +52,6 @@ import androidx.navigation.NavController
 import coil.compose.SubcomposeAsyncImage
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
-import org.mathieu.characters.list.CharactersAction
 import org.mathieu.ui.Destination
 import org.mathieu.ui.composables.PreviewContent
 import org.mathieu.ui.navigate
@@ -253,7 +249,6 @@ fun CardItem(
     }
 }
 
-@SuppressLint("MissingPermission")
 fun triggerVibration(context: Context) {
     val vibrator = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
         val vibratorManager =
@@ -263,7 +258,6 @@ fun triggerVibration(context: Context) {
         context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
     }
 
-    // Vérifiez si l'appareil peut vibrer
     if (vibrator.hasVibrator()) {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             vibrator.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE))

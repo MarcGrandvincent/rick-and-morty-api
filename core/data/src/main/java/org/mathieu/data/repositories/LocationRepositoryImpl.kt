@@ -2,12 +2,7 @@ package org.mathieu.data.repositories
 
 import android.content.Context
 import androidx.datastore.preferences.preferencesDataStore
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import org.mathieu.data.local.LocationLocal
-import org.mathieu.data.local.objects.CharacterObject
-import org.mathieu.data.local.objects.LocationObject
 import org.mathieu.data.local.objects.toModel
 import org.mathieu.data.local.objects.toRealmObject
 import org.mathieu.data.remote.LocationApi
@@ -25,9 +20,7 @@ internal class LocationRepositoryImpl(
     private val locationApi: LocationApi,
     private val locationLocal: LocationLocal
 ) : LocationRepository {
-
-    override suspend fun getLocation(id: Int): Location
-    {
+    override suspend fun getLocation(id: Int): Location {
         return locationLocal.getLocation(id)?.toModel()
             ?: locationApi.getLocation(id = id)?.let { response ->
                 val obj = response.toRealmObject()

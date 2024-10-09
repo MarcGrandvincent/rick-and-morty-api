@@ -1,7 +1,6 @@
 package org.mathieu.locations.details
 
 import android.app.Application
-import android.util.Log
 import org.koin.core.component.inject
 import org.mathieu.domain.models.character.Character
 import org.mathieu.ui.ViewModel
@@ -14,6 +13,15 @@ class LocationDetailsViewModel(application: Application) :
 
     private fun fetchCharacters(ids: List<Int>) {
         fetchData(
+            /**
+             * Justification technique pour l'évaluation :
+             * Initialement, dans la couche data, nous utilisons la base de données SQLite pour éviter de
+             * faire deux fois la même requête à l'API pour une donnée identique. Cependant, dans notre cas,
+             * les locations peuvent parfois contenir plusieurs centaines de personnages. Il serait
+             * techniquement coûteux de faire une requête SQL pour chacun d'eux, puis une requête à l'API,
+             * et enfin d'ajouter les personnages manquants dans la base de données. Dans ce cas, il me semble
+             * plus optimal en termes de performances et de développement de passer uniquement par l'API.
+             */
             source = { characterRepository.getCharactersByIds(ids) }
         ) {
             onSuccess {

@@ -4,7 +4,9 @@ import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 import org.mathieu.data.remote.responses.CharacterResponse
 import org.mathieu.data.repositories.tryOrNull
-import org.mathieu.domain.models.character.*
+import org.mathieu.domain.models.character.Character
+import org.mathieu.domain.models.character.CharacterGender
+import org.mathieu.domain.models.character.CharacterStatus
 import org.mathieu.domain.models.location.LocationPreview
 
 /**
@@ -25,7 +27,7 @@ import org.mathieu.domain.models.location.LocationPreview
  * @property image URL pointing to the character's avatar image.
  * @property created Timestamp indicating when the character entity was created in the database.
  */
-internal class CharacterObject : RealmObject {
+internal class CharacterObject: RealmObject {
     @PrimaryKey
     var id: Int = -1
     var name: String = ""

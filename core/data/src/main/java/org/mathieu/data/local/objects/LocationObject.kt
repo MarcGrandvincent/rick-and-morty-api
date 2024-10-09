@@ -2,15 +2,24 @@ package org.mathieu.data.local.objects
 
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
-import org.mathieu.data.remote.responses.CharacterResponse
 import org.mathieu.data.remote.responses.LocationResponse
-import org.mathieu.data.repositories.tryOrNull
 import org.mathieu.domain.models.character.Character
 import org.mathieu.domain.models.character.CharacterGender
 import org.mathieu.domain.models.character.CharacterStatus
 import org.mathieu.domain.models.location.Location
 import org.mathieu.domain.models.location.LocationPreview
 
+/**
+ * Entity representing a location in the database.
+ *
+ * @property id Unique identifier of the location.
+ * @property name Name of the location.
+ * @property type Type of the location.
+ * @property dimension Dimension of the location.
+ * @property residents Residents of the location. It is a multitude of IDs separated with a ','
+ * @property url Url of the location.
+ * @property created Creation date of the location.
+ */
 internal class LocationObject : RealmObject {
     @PrimaryKey
     var id: Int = -1;

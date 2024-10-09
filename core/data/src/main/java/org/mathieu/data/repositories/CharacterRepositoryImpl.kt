@@ -9,14 +9,13 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import org.mathieu.data.local.CharacterLocal
 import org.mathieu.data.local.objects.CharacterObject
-import org.mathieu.data.local.objects.LocationObject
 import org.mathieu.data.local.objects.toModel
 import org.mathieu.data.local.objects.toRealmObject
 import org.mathieu.data.remote.CharacterApi
 import org.mathieu.data.remote.responses.CharacterResponse
-import org.mathieu.domain.repositories.CharacterRepository
 import org.mathieu.domain.models.character.Character
 import org.mathieu.domain.models.location.LocationPreview
+import org.mathieu.domain.repositories.CharacterRepository
 import org.mathieu.domain.repositories.LocationRepository
 
 private const val CHARACTER_PREFS = "character_repository_preferences"
@@ -44,7 +43,6 @@ internal class CharacterRepositoryImpl(
         return characterApi.getCharactersById(ids).map { c -> c.toModel() };
     }
 
-
     /**
      * Fetches the next batch of characters and saves them to local storage.
      *
@@ -64,7 +62,7 @@ internal class CharacterRepositoryImpl(
         if (page != -1) {
             val response = characterApi.getCharacters(page)
 
-            val nextPageToLoad = response.info.next?.split("?page=")?.last()?.toIntOrNull() ?: -1
+            val nextPageToLoad = response.info.next?.split("?page=")?.last()?.toInt() ?: -1
 
             context.dataStore.edit { prefs -> prefs[nextPage] = nextPageToLoad }
 
